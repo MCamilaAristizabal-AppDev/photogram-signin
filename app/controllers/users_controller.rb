@@ -76,25 +76,27 @@ def sign_in
 end
 
 def authenticate
+  # get the username
   un = params.fetch("input_username")
+  # get the password
   pw = params.fetch("input_password")
 
-  user = User.where ({:username => un}).at(0)
- 
+  # look up the record
+  user = User.where({:username => un}).at(0)
+  # if there's no record, redirect back to sign in form
   if user == nil
-    redirect_to ("/user_sign_in")
-  else
-   if user.authenticate(pw)
-   session.store(:user_id,user.id)
-   redirect_to ("/")
-   else
-  redirect_to ("/user_sign_in")
-   end
+    redirect_to("/user_sign_in", {:alert => "No one by that name 'round these parts"})
+  else 
+    # if there is a record, check to see if password matches
+    if user.authenticate(pw)
+      session.store(:user_id, user.id)
 
+      redirect_to("/", {:notice => "Welcome back, " + user.username + "!"})
+      # if not, redirect back to sign in form
+    else
+      redirect_to("/user_sign_in", {:alert => "Nice try, sucker!"})
+    end
   end
-
-
-
 end
 
 
